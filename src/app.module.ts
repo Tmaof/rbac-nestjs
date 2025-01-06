@@ -1,10 +1,27 @@
-import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { Global, Module } from '@nestjs/common';
+import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { UserModule } from './user/user.module';
 
+const connectionParams:TypeOrmModuleOptions = {
+    type: 'mysql',
+    host: '127.0.0.1',
+    port: 3306,
+    username: 'root',
+    password: '0000',
+    database: 'rbac-nest',
+    entities: [`${__dirname}/**/*.entity{.js,.ts}`],
+    // 同步本地的schema与数据库 -> 初始化的时候去使用
+    synchronize: true,
+    logging: true,
+};
+
+@Global()
 @Module({
-    imports: [],
-    controllers: [AppController],
-    providers: [AppService],
+    imports: [
+        TypeOrmModule.forRoot(connectionParams),
+        UserModule,
+    ],
+    controllers: [],
+    providers: [],
 })
 export class AppModule {}
