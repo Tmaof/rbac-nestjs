@@ -1,4 +1,4 @@
-import { Role } from '@/role/role.entity';
+import { Role } from '@/modules/role/role.entity';
 import { Column, Entity, ManyToMany, PrimaryGeneratedColumn, JoinTable } from 'typeorm';
 
 @Entity('permission')

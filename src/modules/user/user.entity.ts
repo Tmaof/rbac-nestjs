@@ -2,8 +2,8 @@ import {
     Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn
 } from 'typeorm';
 import { Exclude } from 'class-transformer';
-import { Role } from '@/role/role.entity';
-import { UserLog } from '@/user-log/user-log.entity';
+import { Role } from '@/modules/role/role.entity';
+import { UserLog } from '@/modules/user-log/user-log.entity';
 
 @Entity('user')
 export class User {
