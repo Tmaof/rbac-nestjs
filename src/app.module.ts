@@ -1,6 +1,7 @@
 import { Global, Module } from '@nestjs/common';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { UserModule } from './modules/user/user.module';
+import { AuthModule } from './modules/auth/auth.module';
 
 const connectionParams:TypeOrmModuleOptions = {
     type: 'mysql',
@@ -11,7 +12,7 @@ const connectionParams:TypeOrmModuleOptions = {
     database: 'rbac-nest',
     entities: [`${__dirname}/**/*.entity{.js,.ts}`],
     // 同步本地的schema与数据库 -> 初始化的时候去使用
-    synchronize: true,
+    // synchronize: true,
     logging: true,
 };
 
@@ -20,6 +21,7 @@ const connectionParams:TypeOrmModuleOptions = {
     imports: [
         TypeOrmModule.forRoot(connectionParams),
         UserModule,
+        AuthModule,
     ],
     controllers: [],
     providers: [],

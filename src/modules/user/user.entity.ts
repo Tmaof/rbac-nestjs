@@ -33,5 +33,12 @@ export class User {
 
     /** 用户-日志关联 */
     @OneToMany(() => UserLog, (userLog) => userLog.user)
-        log:UserLog;
+        log:UserLog[];
+
+    constructor (user: Partial<User>) {
+        this.openTime = new Date();
+        this.avatar = 'https://www.maofu123.top/qiniuyun-68aaec38a9bcb79c31fc90738b18e603-maofu-%E5%8A%A8%E6%BC%AB%E5%A4%B4%E5%83%8F.webp';
+        this.gender = 0;
+        Object.assign(this, user);
+    }
 }
