@@ -8,8 +8,8 @@ export class Role {
     @PrimaryGeneratedColumn({ comment: '角色ID，主键' })
         id: number;
 
-    @Column({ comment: '角色名称' })
-        title: string;
+    @Column({ comment: '角色名称', unique: true })
+        name: string;
 
     @Column({ comment: '角色描述' })
         describe: string;

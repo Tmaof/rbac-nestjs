@@ -1,8 +1,12 @@
+import { getCommonRes } from '@/utils';
+import { CreateUserBatchDto } from './dto/create-user-batch.dto';
 import { getUserDto } from './dto/get-user.dto';
 import { UserService } from './user.service';
 import {
+    Body,
     Controller,
     Get,
+    Post,
     Query,
 } from '@nestjs/common';
 
@@ -20,5 +24,12 @@ export class UserController {
 
         // eslint-disable-next-line no-console
         console.log(query);
+    }
+
+    /** 添加用户-批量-excel导入 */
+    @Post('add/batch')
+    async addUserBatch (@Body() dto: CreateUserBatchDto) {
+        const data = await this.userService.createBatch(dto);
+        return getCommonRes(data);
     }
 }
