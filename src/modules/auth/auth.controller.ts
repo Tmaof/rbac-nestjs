@@ -7,6 +7,7 @@ import {
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { SigninUserDto } from './dto/signin-user.dto';
+import { getCommonRes } from '@/utils';
 
 
 @Controller('auth')
@@ -17,8 +18,9 @@ export class AuthController {
 
     /** 注册 */
     @Post('/signup')
-    signup (@Body() dto: SigninUserDto) {
+    async signup (@Body() dto: SigninUserDto) {
         const { username, password } = dto;
-        return this.authService.signup(username, password);
+        const data = await this.authService.signup(username, password);
+        return getCommonRes({ data });
     }
 }
