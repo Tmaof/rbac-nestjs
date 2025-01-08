@@ -15,6 +15,13 @@ import { getCommonRes } from '@/utils';
 export class AuthController {
     constructor (private authService: AuthService,) {}
 
+    /** 登录 */
+    @Post('/signin')
+    async signin (@Body() dto: SigninUserDto) {
+        const { username, password } = dto;
+        const token = await this.authService.signin(username, password);
+        return getCommonRes({ data: { token } });
+    }
 
     /** 注册 */
     @Post('/signup')
