@@ -2,6 +2,7 @@ import { Global, Module } from '@nestjs/common';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { UserModule } from './modules/user/user.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { RolesModule } from './modules/role/role.module';
 
 const connectionParams:TypeOrmModuleOptions = {
     type: 'mysql',
@@ -22,6 +23,7 @@ const connectionParams:TypeOrmModuleOptions = {
         TypeOrmModule.forRoot(connectionParams),
         UserModule,
         AuthModule,
+        RolesModule,
     ],
     controllers: [],
     providers: [],

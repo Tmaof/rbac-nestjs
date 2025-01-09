@@ -11,7 +11,7 @@ export class Role {
     @Column({ comment: '角色名称', unique: true })
         name: string;
 
-    @Column({ comment: '角色描述' })
+    @Column({ comment: '角色描述', default: '' })
         describe: string;
 
     /** 用户-角色关联表 */

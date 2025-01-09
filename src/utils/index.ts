@@ -9,7 +9,7 @@ class CommonResponse<DataT> {
 /**
  * 返回接口的通用响应
  */
-const getCommonRes = <DataT>(res:Partial<CommonResponse<DataT>>) => {
+const getCommonRes = <DataT>(res?:Partial<CommonResponse<DataT>>) => {
     const defaultRes = {
         data: {},
         message: '请求成功',
