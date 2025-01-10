@@ -3,6 +3,7 @@ import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { UserModule } from './modules/user/user.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { RolesModule } from './modules/role/role.module';
+import { PermissionModule } from './modules/permission/permission.module';
 
 const connectionParams:TypeOrmModuleOptions = {
     type: 'mysql',
@@ -24,6 +25,7 @@ const connectionParams:TypeOrmModuleOptions = {
         UserModule,
         AuthModule,
         RolesModule,
+        PermissionModule,
     ],
     controllers: [],
     providers: [],
