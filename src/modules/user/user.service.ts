@@ -5,6 +5,7 @@ import { User } from './user.entity';
 import * as argon2 from 'argon2';
 import { CreateUserBatchDto } from './dto/create-user-batch.dto';
 import { Role } from '../role/role.entity';
+import { UpdateUserRoleDto } from './dto/update-user-role.dto';
 
 @Injectable()
 export class UserService {
@@ -96,6 +97,27 @@ export class UserService {
         }
 
         return { message };
+    }
+
+    /** 更新用户的角色 */
+    async updateUserRole (dto:UpdateUserRoleDto) {
+        const { userId, payload } = dto;
+        if (payload.length === 0) {
+            return;
+        }
+
+        const user = await this.userRepository.findOne({ where: { id: userId } });
+        if (!user) {
+            return { message: '用户不存在' };
+        }
+
+        const roles = await this.roleRepository.find({ where: payload });
+        user.role = roles;
+        // 联合模型更新，需要使用save方法或者queryBuilder
+        await this.userRepository.save(user);
+
+        // 下面的update方法，只适合单模型的更新，不适合有关系的模型更新
+        // return this.userRepository.update(parseInt(userId), user);
     }
 
     /** 更新 */

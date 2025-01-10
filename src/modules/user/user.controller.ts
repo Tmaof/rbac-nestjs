@@ -9,6 +9,7 @@ import {
     Post,
     Query,
 } from '@nestjs/common';
+import { UpdateUserRoleDto } from './dto/update-user-role.dto';
 
 @Controller('user')
 export class UserController {
@@ -30,6 +31,13 @@ export class UserController {
     @Post('add/batch')
     async addUserBatch (@Body() dto: CreateUserBatchDto) {
         const data = await this.userService.createBatch(dto);
+        return getCommonRes(data);
+    }
+
+    /** 更新用户角色 */
+    @Post('update/role')
+    async updateUserRole (@Body() dto: UpdateUserRoleDto) {
+        const data = await this.userService.updateUserRole(dto);
         return getCommonRes(data);
     }
 }
