@@ -27,22 +27,18 @@ export class UserController {
         return getCommonRes({ data });
     }
 
-    /** 查询用户 */
+    /** 查询用户列表-分页 */
     @Get('/paging')
     async  getUsersPaging (@Query() query: GetUserAllPagingDto) {
         const data = await this.userService.findAllPaging(query);
         return getCommonRes({ data });
     }
 
-    /** 查询用户 */
-    @Get('')
-    getUsers (@Query() query): any {
-        // page - 页码，limit - 每页条数，condition-查询条件(username, role, gender)，sort-排序
-        // 前端传递的Query参数全是string类型，需要转换成number类型
-        // return this.userService.findAll(query);
-
-        // eslint-disable-next-line no-console
-        console.log(query);
+    /** 查询用户列表-(用于 Excel 导出) */
+    @Get('/batch/excel')
+    async getUsers () {
+        const data = await this.userService.findAllExcel();
+        return getCommonRes({ data });
     }
 
     /** 添加用户-批量-excel导入 */

@@ -10,6 +10,7 @@ import { JwtPayloadParsed } from '../auth/types';
 import { Permission } from '../permission/permission.entity';
 import { PermissionTypeEnum } from '../permission/enum';
 import { GetUserAllPagingDto } from './dto/get-user.dto';
+import { FindAllExcelResDto } from './dto-res/get.dto';
 
 @Injectable()
 export class UserService {
@@ -89,9 +90,29 @@ export class UserService {
         };
     }
 
-    /** 查询所有 */
-    findAll () {
-        return this.userRepository.find();
+    /** 查询用户列表-(用于 Excel 导出) */
+    async findAllExcel () {
+        const users = await this.userRepository.find({
+            select: {
+                id: true,
+                username: true,
+                avatar: true,
+                openTime: true,
+            },
+            relations: { role: true },
+        });
+
+        const data:FindAllExcelResDto = { list: [] };
+        users.forEach((user) => {
+            data.list.push({
+                id: user.id,
+                username: user.username,
+                avatar: user.avatar,
+                openTime: user.openTime.toDateString(),
+                role: user.role.map((item) => item.name).join(','),
+            });
+        });
+        return data;
     }
 
     /** 根据用户名查询 */
