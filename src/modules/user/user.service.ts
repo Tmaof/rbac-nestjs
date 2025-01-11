@@ -9,6 +9,7 @@ import { UpdateUserRoleDto } from './dto/update-user-role.dto';
 import { JwtPayloadParsed } from '../auth/types';
 import { Permission } from '../permission/permission.entity';
 import { PermissionTypeEnum } from '../permission/enum';
+import { GetUserAllPagingDto } from './dto/get-user.dto';
 
 @Injectable()
 export class UserService {
@@ -65,6 +66,27 @@ export class UserService {
         delete userInfo.password;
         delete userInfo.log;
         return userInfo;
+    }
+
+    /** 查询用户-分页 */
+    async findAllPaging (dto:GetUserAllPagingDto) {
+        const { size, page } = dto;
+        /** 步长 */
+        const take = size || 2;
+        /** 起始点 */
+        const skip = ((page || 1) - 1) * take;
+
+        const users = await this.userRepository.find({ relations: { role: true }, take, skip });
+        users.forEach((user) => {
+            delete user.password;
+        });
+        const total = await this.userRepository.count();
+        return {
+            list: users,
+            total,
+            page,
+            size,
+        };
     }
 
     /** 查询所有 */
