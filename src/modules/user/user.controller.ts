@@ -8,12 +8,23 @@ import {
     Get,
     Post,
     Query,
+    Req,
+    UseGuards,
 } from '@nestjs/common';
 import { UpdateUserRoleDto } from './dto/update-user-role.dto';
+import { JwtGuard } from '@/guards/jwt.guard';
 
 @Controller('user')
+@UseGuards(JwtGuard)
 export class UserController {
     constructor (private userService: UserService,) {
+    }
+
+    /** 获取当前用户的信息 */
+    @Get('/profile')
+    async getCurrentUser (@Req() req) {
+        const data = await this.userService.getCurrentUser(req.user);
+        return getCommonRes({ data });
     }
 
     /** 查询用户 */

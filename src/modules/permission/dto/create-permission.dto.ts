@@ -1,4 +1,5 @@
 import { IsString, IsNotEmpty, IsNumber } from 'class-validator';
+import { PermissionTypeEnum } from '../enum';
 
 export class CreatePermissionDto {
     /**  权限代码，与前端页面的实际情况结合。 */
@@ -16,7 +17,7 @@ export class CreatePermissionDto {
     /**  权限类型，为1代表页面权限，为2代表按钮权限。 */
     @IsNotEmpty()
     @IsNumber()
-        type: number;
+        type: PermissionTypeEnum;
 }
 
 

@@ -6,6 +6,9 @@ import * as argon2 from 'argon2';
 import { CreateUserBatchDto } from './dto/create-user-batch.dto';
 import { Role } from '../role/role.entity';
 import { UpdateUserRoleDto } from './dto/update-user-role.dto';
+import { JwtPayloadParsed } from '../auth/types';
+import { Permission } from '../permission/permission.entity';
+import { PermissionTypeEnum } from '../permission/enum';
 
 @Injectable()
 export class UserService {
@@ -13,8 +16,56 @@ export class UserService {
         @InjectRepository(User)
         private readonly userRepository: Repository<User>,
         @InjectRepository(Role)
-        private readonly roleRepository: Repository<Role>
+        private readonly roleRepository: Repository<Role>,
+        @InjectRepository(Permission)
+        private readonly permissionRepository: Repository<Permission>
     ) {}
+
+    /** 获取当前用户的信息 */
+    async getCurrentUser (jwtPayload:JwtPayloadParsed) {
+        // console.log('jwtPayload', jwtPayload);
+        const user = await this.userRepository.findOne({
+            where: { id: jwtPayload.userId, username: jwtPayload.username },
+            // relations: ['role', 'role.permission'],
+            relations: ['role'],
+        });
+
+        if (!user) {
+            return { message: '用户不存在' };
+        }
+
+        /** 用户拥有的 角色id 列表 */
+        const roleIds = user.role.map(item => item.id);
+
+        const permissions = await this.permissionRepository.find({ where: roleIds.map((id) => ({ id })) });
+
+        /** 菜单权限 代码code 的列表 */
+        const menus:string[] = [];
+        /** 按钮权限 代码code 的列表 */
+        const points:string[] = [];
+
+        for (const permission of permissions) {
+            // 为1代表页面权限，为2代表按钮权限。
+            if (permission.type === PermissionTypeEnum.page) {
+                menus.push(permission.code);
+            } else if (permission.type === PermissionTypeEnum.pont) {
+                points.push(permission.code);
+            }
+        }
+
+        const userInfo = {
+            ...user,
+            role: roleIds,
+            permission: {
+                menus,
+                points,
+            },
+        };
+
+        delete userInfo.password;
+        delete userInfo.log;
+        return userInfo;
+    }
 
     /** 查询所有 */
     findAll () {
