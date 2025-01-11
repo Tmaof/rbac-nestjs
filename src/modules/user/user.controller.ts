@@ -5,6 +5,7 @@ import { UserService } from './user.service';
 import {
     Body,
     Controller,
+    Delete,
     Get,
     Param,
     Post,
@@ -60,6 +61,13 @@ export class UserController {
     @Post('update/role')
     async updateUserRole (@Body() dto: UpdateUserRoleDto) {
         const data = await this.userService.updateUserRole(dto);
+        return getCommonRes(data);
+    }
+
+    /** 删除用户 */
+    @Delete('/:userId')
+    async removeUser (@Param('userId') userId: number) {
+        const data = await this.userService.remove(userId);
         return getCommonRes(data);
     }
 }

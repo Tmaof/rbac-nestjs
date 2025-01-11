@@ -230,7 +230,13 @@ export class UserService {
     }
 
     /** 删除 */
-    remove () {
-        // this.userRepository.remove(user);
+    async remove (userId:number) {
+        // return this.userRepository.delete(id);
+        const user = await this.userRepository.findOne({ where: { id: userId } });
+        if (!user) {
+            return { message: '用户不存在' };
+        }
+        this.userRepository.remove(user);
+        return { message: '删除成功' };
     }
 }
