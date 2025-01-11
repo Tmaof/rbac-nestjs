@@ -9,7 +9,7 @@ import { UpdateUserRoleDto } from './dto/update-user-role.dto';
 import { JwtPayloadParsed } from '../auth/types';
 import { Permission } from '../permission/permission.entity';
 import { PermissionTypeEnum } from '../permission/enum';
-import { GetUserAllPagingDto } from './dto/get-user.dto';
+import { GetUserAllPagingDto, GetUserRoleDto } from './dto/get-user.dto';
 import { FindAllExcelResDto } from './dto-res/get.dto';
 
 @Injectable()
@@ -113,6 +113,16 @@ export class UserService {
             });
         });
         return data;
+    }
+
+    /** 获取指定员工的角色（用于分配角色） */
+    async findUserRole (dto:GetUserRoleDto) {
+        const user = await this.userRepository.findOne({
+            where: { id: dto.userId },
+            relations: { role: true },
+        });
+
+        return { role: user.role };
     }
 
     /** 根据用户名查询 */

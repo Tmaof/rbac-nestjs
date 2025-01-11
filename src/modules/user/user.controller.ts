@@ -1,11 +1,12 @@
 import { getCommonRes } from '@/utils';
 import { CreateUserBatchDto } from './dto/create-user-batch.dto';
-import { GetUserAllPagingDto } from './dto/get-user.dto';
+import { GetUserAllPagingDto, GetUserRoleDto } from './dto/get-user.dto';
 import { UserService } from './user.service';
 import {
     Body,
     Controller,
     Get,
+    Param,
     Post,
     Query,
     Req,
@@ -38,6 +39,13 @@ export class UserController {
     @Get('/batch/excel')
     async getUsers () {
         const data = await this.userService.findAllExcel();
+        return getCommonRes({ data });
+    }
+
+    /** 获取指定员工的角色（用于分配角色） */
+    @Get('/role/:userId')
+    async getUserRole (@Param() dto: GetUserRoleDto) {
+        const data = await this.userService.findUserRole(dto);
         return getCommonRes({ data });
     }
 

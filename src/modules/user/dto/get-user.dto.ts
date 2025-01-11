@@ -1,4 +1,4 @@
-import { IsNumber } from 'class-validator';
+import { IsNotEmpty, IsNumber } from 'class-validator';
 
 export class GetUserAllPagingDto {
     @IsNumber()
@@ -6,4 +6,11 @@ export class GetUserAllPagingDto {
 
     @IsNumber()
         size?: number;
+}
+
+
+export class GetUserRoleDto {
+    @IsNumber()
+    @IsNotEmpty()
+        userId: number;
 }
