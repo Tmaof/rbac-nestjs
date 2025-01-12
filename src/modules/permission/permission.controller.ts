@@ -4,6 +4,8 @@ import {
     Body,
     UseGuards,
     Get,
+    Delete,
+    Param,
 } from '@nestjs/common';
 import { PermissionService } from './permission.service';
 import { CreatePermissionDto } from './dto/create-permission.dto';
@@ -25,6 +27,13 @@ export class RolesController {
     @Get('list')
     async getPermissionList () {
         const res = await this.permissionService.getPermissionList();
+        return getCommonRes(res);
+    }
+
+    /** 删除权限 */
+    @Delete(':permissionId')
+    async deletePermission (@Param('permissionId') permissionId: number) {
+        const res = await this.permissionService.delete(permissionId);
         return getCommonRes(res);
     }
 }

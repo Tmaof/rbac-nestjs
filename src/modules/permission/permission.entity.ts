@@ -18,8 +18,11 @@ export class Permission {
     @Column({ comment: '权限代码' })
         code: string;
 
-    /** 角色-权限关联表 */
-    @ManyToMany(() => Role, (role) => role.permission)
+    /**
+     * 角色-权限关联表 。
+     * 删除一个权限的时候，同时删除它在角色-权限关联表中的记录。
+     */
+    @ManyToMany(() => Role, (role) => role.permission, { cascade: ['remove'] })
     @JoinTable({ name: 'role_permission' })
         role: Role[];
 
