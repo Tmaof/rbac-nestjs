@@ -5,6 +5,7 @@ import {
     UseGuards,
     Get,
     Param,
+    Delete,
 } from '@nestjs/common';
 import { RolesService } from './role.service';
 import { CreateRoleDto } from './dto/create-role.dto';
@@ -41,6 +42,13 @@ export class RolesController {
     @Post('update/permission')
     async updateRolePermission (@Body() dto: UpdateRolePermissionDto) {
         const data = await this.rolesService.updateRolePermission(dto);
+        return getCommonRes(data);
+    }
+
+    /** 删除角色 */
+    @Delete(':roleId')
+    async deleteRole (@Param('roleId') roleId: number) {
+        const data = await this.rolesService.delete(roleId);
         return getCommonRes(data);
     }
 }

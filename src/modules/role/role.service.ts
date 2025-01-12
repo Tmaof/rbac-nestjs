@@ -94,4 +94,15 @@ export class RolesService {
         // 联合模型更新，需要使用save方法或者queryBuilder
         await this.roleRepository.save(role);
     }
+
+    /** 删除 角色 */
+    async delete (id: number) {
+        const role = await this.roleRepository.findOne({ where: { id } });
+        if (!role) {
+            return { message: '角色不存在' };
+        }
+        // delete  -> AfterRemove 不会触发
+        await this.roleRepository.delete(id);
+        return { message: '删除成功' };
+    }
 }
