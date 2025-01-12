@@ -5,6 +5,7 @@ import { Role } from './role.entity';
 import { Repository } from 'typeorm';
 import { UpdateRolePermissionDto } from './dto/update-role-permission.dto';
 import { Permission } from '../permission/permission.entity';
+import { GetRoleListDto } from './dto-res/get.dto';
 
 @Injectable()
 export class RolesService {
@@ -14,6 +15,21 @@ export class RolesService {
         @InjectRepository(Permission)
         private permissionRepository: Repository<Permission>,
     ) {}
+
+    /** 查询所有角色 */
+    async getRoleList () {
+        const roles = await this.roleRepository.find({ relations: ['permission'] });
+
+        const res:GetRoleListDto = [];
+        for (const role of roles) {
+            const { id, name, describe, permission } = role;
+            const names = permission.map(item => item.name);
+            const permissions = permission.map(item => item.id);
+
+            res.push({ id, name, describe, permissions, names });
+        }
+        return { data: res };
+    }
 
     /** 创建 一个 角色 */
     async create (dto: CreateRoleDto) {
