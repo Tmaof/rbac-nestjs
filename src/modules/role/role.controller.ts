@@ -4,6 +4,7 @@ import {
     Body,
     UseGuards,
     Get,
+    Param,
 } from '@nestjs/common';
 import { RolesService } from './role.service';
 import { CreateRoleDto } from './dto/create-role.dto';
@@ -20,6 +21,13 @@ export class RolesController {
     async getRoleList () {
         const data = await this.rolesService.getRoleList();
         return getCommonRes(data);
+    }
+
+    /** 获取指定角色的权限（用于分配权限） */
+    @Get('permission/:roleId')
+    async getRolePermission (@Param('roleId') roleId: number) {
+        const res = await this.rolesService.getRolePermission(roleId);
+        return getCommonRes(res);
     }
 
     /** 添加角色 */

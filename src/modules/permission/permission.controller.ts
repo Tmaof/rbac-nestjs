@@ -3,6 +3,7 @@ import {
     Post,
     Body,
     UseGuards,
+    Get,
 } from '@nestjs/common';
 import { PermissionService } from './permission.service';
 import { CreatePermissionDto } from './dto/create-permission.dto';
@@ -18,5 +19,12 @@ export class RolesController {
     addRole (@Body() dto: CreatePermissionDto) {
         this.permissionService.create(dto);
         return getCommonRes();
+    }
+
+    /** 获取所有的权限 */
+    @Get('list')
+    async getPermissionList () {
+        const res = await this.permissionService.getPermissionList();
+        return getCommonRes(res);
     }
 }

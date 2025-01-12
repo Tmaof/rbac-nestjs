@@ -5,7 +5,9 @@ import { Role } from './role.entity';
 import { Repository } from 'typeorm';
 import { UpdateRolePermissionDto } from './dto/update-role-permission.dto';
 import { Permission } from '../permission/permission.entity';
-import { GetRoleListDto } from './dto-res/get.dto';
+import { GetRoleListDto, GetRolePermissionsDto, GetRolePermissionsListItem } from './dto-res/get.dto';
+import { PermissionService } from '../permission/permission.service';
+import { GetPermissionListDto } from '../permission/dto-res/get.dto';
 
 @Injectable()
 export class RolesService {
@@ -14,6 +16,7 @@ export class RolesService {
         private roleRepository: Repository<Role>,
         @InjectRepository(Permission)
         private permissionRepository: Repository<Permission>,
+        private permissionService: PermissionService,
     ) {}
 
     /** 查询所有角色 */
@@ -29,6 +32,39 @@ export class RolesService {
             res.push({ id, name, describe, permissions, names });
         }
         return { data: res };
+    }
+
+    /** 获取指定角色的权限（用于分配权限） */
+    async getRolePermission (roleId:number) {
+        const role = await this.roleRepository.findOne({ where: { id: roleId }, relations: ['permission'] });
+        if (!role) {
+            return { message: '角色不存在' };
+        }
+
+        /** 该角色拥有的权限id列表。 */
+        const selected:GetRolePermissionsDto['selected'] = role.permission.map(item => item.id);
+        /** 权限列表-添加 select 标记 */
+        const list:GetRolePermissionsDto['list'] = [];
+
+        /** 所有的权限的列表-权限树 */
+        const { data: permissionList } = await this.permissionService.getPermissionList();
+
+        /** 递归函数，为 每个权限 添加 select 标记 */
+        const addSelectFlag = (permissionList:GetPermissionListDto, resList:GetRolePermissionsDto['list'], selectedList:number[]) => {
+            for (const permission of permissionList) {
+                const { id, pid, name, code, type, children } = permission;
+                const select = selectedList.includes(id) ? 1 : 0;
+                const item:GetRolePermissionsListItem = { id, pid, name, code, type, select, children: [] };
+                if (children.length > 0) {
+                    addSelectFlag(children, item.children, selectedList);
+                }
+                resList.push(item);
+            }
+        };
+        addSelectFlag(permissionList, list, selected);
+
+        const data:GetRolePermissionsDto = { selected, list };
+        return { data };
     }
 
     /** 创建 一个 角色 */

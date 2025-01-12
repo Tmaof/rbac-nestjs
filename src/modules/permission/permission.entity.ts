@@ -1,13 +1,13 @@
 import { Role } from '@/modules/role/role.entity';
-import { Column, Entity, ManyToMany, PrimaryGeneratedColumn, JoinTable } from 'typeorm';
+import {
+    Column, Entity, ManyToMany, PrimaryGeneratedColumn, JoinTable, JoinColumn, ManyToOne, OneToMany
+} from 'typeorm';
 
 @Entity('permission')
 export class Permission {
     @PrimaryGeneratedColumn({ comment: '权限ID，主键' })
         id: number;
 
-    @Column({ comment: '父级权限ID。该权限的父权限id，如若添加根权限，pid要取-1。' })
-        pid: number;
 
     @Column({ comment: '权限名称' })
         name: string;
@@ -22,4 +22,13 @@ export class Permission {
     @ManyToMany(() => Role, (role) => role.permission)
     @JoinTable({ name: 'role_permission' })
         role: Role[];
+
+    /** 一个父权限 可以 有多个子权限 */
+    @OneToMany(() => Permission, (permission) => permission.parentPermission)
+        children:Permission[];
+
+    /** 一个子权限 只能 有一个父权限 */
+    @ManyToOne(() => Permission, (permission) => permission.children)
+    @JoinColumn()
+        parentPermission: Permission;
 }
