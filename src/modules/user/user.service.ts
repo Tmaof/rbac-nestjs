@@ -134,9 +134,8 @@ export class UserService {
     }
 
     /** 查询单个 */
-    findOne () {
-
-        // return this.userRepository.findOne();
+    findOne (userId:number) {
+        return this.userRepository.findOne({ where: { id: userId } });
     }
 
     /** 新增用户 */
