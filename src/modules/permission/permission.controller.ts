@@ -13,12 +13,12 @@ import { getCommonRes } from '@/utils';
 
 @Controller('permission')
 @UseGuards()
-export class RolesController {
+export class PermissionController {
     constructor (private readonly permissionService: PermissionService) {}
 
     /** 添加权限 */
     @Post('add')
-    addRole (@Body() dto: CreatePermissionDto) {
+    addPermission (@Body() dto: CreatePermissionDto) {
         this.permissionService.create(dto);
         return getCommonRes();
     }
