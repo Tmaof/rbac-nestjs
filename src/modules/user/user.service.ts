@@ -36,31 +36,32 @@ export class UserService {
             return { message: '用户不存在' };
         }
 
-        /** 用户拥有的 角色id 列表 */
-        const roleIds = user.role.map(item => item.id);
+        const queryList = user.role.map(item => ({ id: item.id }));
 
-        const permissions = await this.permissionRepository.find({ where: roleIds.map((id) => ({ id })) });
+        const roles = await this.roleRepository.find({ where: queryList, relations: ['permission'] });
 
         /** 菜单权限 代码code 的列表 */
-        const menus:string[] = [];
+        const menus = new Set<string>();
         /** 按钮权限 代码code 的列表 */
-        const points:string[] = [];
+        const points = new Set<string>();
 
-        for (const permission of permissions) {
-            // 为1代表页面权限，为2代表按钮权限。
-            if (permission.type === PermissionTypeEnum.page) {
-                menus.push(permission.code);
-            } else if (permission.type === PermissionTypeEnum.pont) {
-                points.push(permission.code);
+        for (const role of roles) {
+            for (const permission of role.permission) {
+                // 为1代表页面权限，为2代表按钮权限。
+                if (permission.type === PermissionTypeEnum.page) {
+                    menus.add(permission.code);
+                } else if (permission.type === PermissionTypeEnum.pont) {
+                    points.add(permission.code);
+                }
             }
         }
 
         const userInfo = {
             ...user,
-            role: roleIds,
+            role: roles.map(item => item.id),
             permission: {
-                menus,
-                points,
+                menus: Array.from(menus),
+                points: Array.from(points),
             },
         };
 
