@@ -15,7 +15,7 @@ export class Permission {
     @Column({ comment: '权限类型。为1代表页面权限，为2代表按钮权限。' })
         type: number;
 
-    @Column({ comment: '权限代码' })
+    @Column({ comment: '权限代码，唯一', unique: true })
         code: string;
 
     /**

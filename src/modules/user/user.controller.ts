@@ -15,15 +15,20 @@ import {
 } from '@nestjs/common';
 import { UpdateUserRoleDto } from './dto/update-user-role.dto';
 import { JwtGuard } from '@/guards/jwt.guard';
+import { setNeedPerm } from '@/decorator/index.decorator';
+import { permTree } from '@/constant/permCode';
+import { PermGuard } from '@/guards/perm.guard';
 
 @Controller('user')
-@UseGuards(JwtGuard)
+@setNeedPerm(permTree.permManage.children.userList)
+@UseGuards(JwtGuard, PermGuard)
 export class UserController {
     constructor (private userService: UserService,) {
     }
 
     /** 获取当前用户的信息 */
     @Get('/profile')
+    @setNeedPerm(permTree.userPublic)
     async getCurrentUser (@Req() req) {
         const data = await this.userService.getCurrentUser(req.user);
         return getCommonRes({ data });
@@ -52,6 +57,7 @@ export class UserController {
 
     /** 添加用户-批量-excel导入 */
     @Post('add/batch')
+    @setNeedPerm(permTree.permManage.children.userList.children.excelImport)
     async addUserBatch (@Body() dto: CreateUserBatchDto) {
         const data = await this.userService.createBatch(dto);
         return getCommonRes(data);
@@ -59,6 +65,7 @@ export class UserController {
 
     /** 更新用户角色 */
     @Post('update/role')
+    @setNeedPerm(permTree.permManage.children.userList.children.assignRole)
     async updateUserRole (@Body() dto: UpdateUserRoleDto) {
         const data = await this.userService.updateUserRole(dto);
         return getCommonRes(data);
@@ -66,6 +73,7 @@ export class UserController {
 
     /** 删除用户 */
     @Delete('/:userId')
+    @setNeedPerm(permTree.permManage.children.userList.children.deleteUser)
     async removeUser (@Param('userId') userId: number) {
         const data = await this.userService.remove(userId);
         return getCommonRes(data);

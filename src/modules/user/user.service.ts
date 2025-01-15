@@ -69,6 +69,31 @@ export class UserService {
         return userInfo;
     }
 
+    /** 获取用户的所有的权限代码 */
+    async getUserPermCode (userId:number) {
+        const user = await this.userRepository.findOne({
+            where: { id: userId },
+            relations: ['role'],
+        });
+
+        if (!user) {
+            return new Set<string>();
+        }
+
+        const queryList = user.role.map(item => ({ id: item.id }));
+
+        const roles = await this.roleRepository.find({ where: queryList, relations: ['permission']  });
+
+        const codeList = new Set<string>();
+        for (const role of roles) {
+            for (const permission of role.permission) {
+                codeList.add(permission.code);
+            }
+        }
+
+        return codeList;
+    }
+
     /** 查询用户-分页 */
     async findAllPaging (dto:GetUserAllPagingDto) {
         const { size, page } = dto;
