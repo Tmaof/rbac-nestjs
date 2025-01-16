@@ -69,13 +69,20 @@ export const permTree = {
                 name: '权限列表',
                 code: 'menu-list',
                 children: {
+                    addPerm: {
+                        name: '添加权限',
+                        code: 'add-perm',
+                        desc: 'api接口',
+                    },
                     addRootPerm: {
                         name: '添加根权限',
                         code: 'add-root-perm',
+                        desc: '前端按钮',
                     },
                     addChildrenPerm: {
                         name: '添加子权限',
                         code: 'add-children-perm',
+                        desc: '前端按钮',
                     },
                     deletePerm: {
                         name: '删除权限',
