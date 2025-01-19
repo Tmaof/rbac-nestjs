@@ -1,3 +1,5 @@
+import { ResCodeEnum } from '@/enum';
+
 class CommonResponse<DataT> {
     data: DataT;
     message: string;
@@ -13,7 +15,7 @@ const getCommonRes = <DataT>(res?:Partial<CommonResponse<DataT>>) => {
     const defaultRes = {
         data: {},
         message: '请求成功',
-        code: 10000,
+        code: ResCodeEnum.success,
         success: true,
     };
 
