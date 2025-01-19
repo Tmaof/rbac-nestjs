@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Between, Repository } from 'typeorm';
 import { UserLog } from './user-log.entity';
 import { CreateUserLogDto } from './dto-req/post.dto';
 import { UserService } from '../user/user.service';
@@ -8,6 +8,7 @@ import { JwtPayloadParsed } from '../auth/types';
 import * as requestIp from 'request-ip';
 import { objToJsonStr } from '@/utils';
 import { GetUserLogAllPagingDto } from './dto-req/get.dto';
+import { DeleteUserLogByTimeRangeDto } from './dto-req/delete.dto';
 
 
 @Injectable()
@@ -85,5 +86,21 @@ export class UserLogService {
             page,
             size,
         };
+    }
+
+    /** 删除指定日期之间的日志 */
+    async deleteUserlogByTimeRange (dto:DeleteUserLogByTimeRangeDto) {
+        const { startDateStr, endDateStr } = dto;
+        const startDate = new Date(startDateStr);
+        const endDate = new Date(endDateStr);
+        if (Number.isNaN(startDate.getTime()) || Number.isNaN(endDate.getTime())) {
+            return { message: '日期格式不正确' };
+        }
+        if (startDate > endDate) {
+            return { message: '开始日期不能大于结束日期' };
+        }
+
+        // Between 是 TypeORM 提供的一个操作符，用于在数据库查询中指定一个范围。
+        await this.userLogRepository.delete({ time: Between(startDate, endDate) });
     }
 }
