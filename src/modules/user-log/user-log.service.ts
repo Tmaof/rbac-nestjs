@@ -7,6 +7,7 @@ import { UserService } from '../user/user.service';
 import { JwtPayloadParsed } from '../auth/types';
 import * as requestIp from 'request-ip';
 import { objToJsonStr } from '@/utils';
+import { GetUserLogAllPagingDto } from './dto-req/get.dto';
 
 
 @Injectable()
@@ -66,5 +67,23 @@ export class UserLogService {
         };
         // 调用user-log.service.ts的create方法创建日志记录
         this.create(createUserLogDto);
+    }
+
+    /** 查询用户日志-分页 */
+    async findAllPaging (dto:GetUserLogAllPagingDto) {
+        const { size, page } = dto;
+        /** 步长 */
+        const take = size || 2;
+        /** 起始点 */
+        const skip = ((page || 1) - 1) * take;
+
+        const userLogs = await this.userLogRepository.find({ take, skip });
+        const total = await this.userLogRepository.count();
+        return {
+            list: userLogs,
+            total,
+            page,
+            size,
+        };
     }
 }
