@@ -7,24 +7,35 @@ import { PermissionModule } from './modules/permission/permission.module';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { GlobalInterceptor } from './interceptors/global.interceptor';
 import { UserLogModule } from './modules/user-log/user-log.module';
+import { entitiesPaths, envFilePathAll } from 'config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigEnum } from 'config/env/config.enum';
 
-const connectionParams:TypeOrmModuleOptions = {
-    type: 'mysql',
-    host: '127.0.0.1',
-    port: 3306,
-    username: 'root',
-    password: '0000',
-    database: 'rbac-nest',
-    entities: [`${__dirname}/**/*.entity{.js,.ts}`],
-    // 同步本地的schema与数据库 -> 初始化的时候去使用
-    // synchronize: true,
-    logging: true,
-};
 
 @Global()
 @Module({
     imports: [
-        TypeOrmModule.forRoot(connectionParams),
+        ConfigModule.forRoot({
+            // 全局可用 ConfigService
+            isGlobal: true,
+            // 环境变量文件路径
+            envFilePath: envFilePathAll,
+        }),
+        TypeOrmModule.forRootAsync({
+            inject: [ConfigService],
+            useFactory: (cs:ConfigService) => ({
+                type: cs.get(ConfigEnum.DB_TYPE),
+                host: cs.get(ConfigEnum.DB_HOST),
+                port: cs.get(ConfigEnum.DB_PORT),
+                username: cs.get(ConfigEnum.DB_USERNAME),
+                password: cs.get(ConfigEnum.DB_PASSWORD),
+                database: cs.get(ConfigEnum.DB_DATABASE),
+                entities: entitiesPaths,
+                // 同步本地的schema与数据库 -> 初始化的时候去使用
+                synchronize: cs.get(ConfigEnum.DB_SYNC),
+                logging: cs.get(ConfigEnum.DB_LOGGING),
+            }) as TypeOrmModuleOptions,
+        }),
         UserModule,
         AuthModule,
         RolesModule,
