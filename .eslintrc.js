@@ -26,5 +26,6 @@ module.exports = {
     '@typescript-eslint/no-explicit-any': 'off',
     "new-cap": 'off',
     "linebreak-style": 'off',
+    "no-console": ["error", { allow: ["info","warn", "error"] }],
   },
 };
