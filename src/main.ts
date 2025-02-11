@@ -9,6 +9,8 @@ import { ConfigEnum } from 'config/env/config.enum';
 async function bootstrap () {
     const app = await NestFactory.create(AppModule);
     const httpAdapter = app.get(HttpAdapterHost);
+    // 设置全局前缀
+    app.setGlobalPrefix('api/v1');
 
     // 全局管道
     app.useGlobalPipes(ReqValidationPipe);
