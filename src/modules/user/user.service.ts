@@ -186,7 +186,7 @@ export class UserService {
             const existingUser = await this.userRepository.findOne({ where: { username } });
             if (existingUser) {
                 // 如果用户名已存在，跳过该用户
-                console.log(`用户名 ${username} 已存在，跳过该用户`);
+                console.error(`用户名 ${username} 已存在，跳过该用户`);
                 messageList.push(`用户名 ${username} 已存在，跳过该用户`);
                 continue;
             }

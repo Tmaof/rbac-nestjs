@@ -33,7 +33,7 @@ export class AllExceptionFilter implements ExceptionFilter {
 
         const res = getCommonRes({ success: false, code: ResCodeEnum.fail, message: msg });
 
-        console.error(res);
+        console.error(exception);
 
         httpAdapter.reply(response, res, httpStatus);
     }

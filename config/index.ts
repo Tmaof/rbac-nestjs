@@ -12,7 +12,8 @@ export const envFilePath = path.resolve('config', `env/.env.${process.env.NODE_E
 export const envFilePathAll = [commonEnvFilePath, envFilePath];
 
 /** 实体文件路径 */
-export const entitiesPaths = [path.resolve('src/modules', '/**/*.entity{.ts,.js}')];
+// 注意：path.resolve和path.join的区别；最终是运行打包的代码在dist目录中
+export const entitiesPaths = [path.join(__dirname, '../', '/src/modules', '/**/*.entity{.ts,.js}')];
 
 /** 获取配置对象 */
 function getServerConfig () {
@@ -33,4 +34,6 @@ function getServerConfig () {
 
 export const serverConfig = getServerConfig();
 
-// console.info('serverConfig', serverConfig);
+console.info('serverConfig', serverConfig);
+console.info('entitiesPaths', entitiesPaths);
+console.info('envFilePathAll', envFilePathAll);

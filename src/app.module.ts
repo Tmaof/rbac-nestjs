@@ -23,18 +23,22 @@ import { ConfigEnum } from 'config/env/config.enum';
         }),
         TypeOrmModule.forRootAsync({
             inject: [ConfigService],
-            useFactory: (cs:ConfigService) => ({
-                type: cs.get(ConfigEnum.DB_TYPE),
-                host: cs.get(ConfigEnum.DB_HOST),
-                port: cs.get(ConfigEnum.DB_PORT),
-                username: cs.get(ConfigEnum.DB_USERNAME),
-                password: cs.get(ConfigEnum.DB_PASSWORD),
-                database: cs.get(ConfigEnum.DB_DATABASE),
-                entities: entitiesPaths,
-                // 同步本地的schema与数据库 -> 初始化的时候去使用
-                synchronize: cs.get(ConfigEnum.DB_SYNC),
-                logging: cs.get(ConfigEnum.DB_LOGGING),
-            }) as TypeOrmModuleOptions,
+            useFactory: (cs:ConfigService) => {
+                const dbConfig =  ({
+                    type: cs.get(ConfigEnum.DB_TYPE),
+                    host: cs.get(ConfigEnum.DB_HOST),
+                    port: cs.get(ConfigEnum.DB_PORT),
+                    username: cs.get(ConfigEnum.DB_USERNAME),
+                    password: cs.get(ConfigEnum.DB_PASSWORD),
+                    database: cs.get(ConfigEnum.DB_DATABASE),
+                    entities: entitiesPaths,
+                    // 同步本地的schema与数据库 -> 初始化的时候去使用
+                    synchronize: cs.get(ConfigEnum.DB_SYNC),
+                    logging: cs.get(ConfigEnum.DB_LOGGING),
+                }) as TypeOrmModuleOptions;
+                console.info('TypeOrm配置：', dbConfig);
+                return dbConfig;
+            },
         }),
         UserModule,
         AuthModule,
