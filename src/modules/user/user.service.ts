@@ -246,8 +246,10 @@ export class UserService {
         if (!user) {
             return { message: '用户不存在' };
         }
-
-        const roles = await this.roleRepository.find({ where: payload });
+        const queryList = payload.map(item => {
+            return { id: item.id };
+        });
+        const roles = await this.roleRepository.find({ where: queryList });
         user.role = roles;
         // 联合模型更新，需要使用save方法或者queryBuilder
         await this.userRepository.save(user);
