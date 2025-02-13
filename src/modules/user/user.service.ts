@@ -38,7 +38,11 @@ export class UserService {
 
         const queryList = user.role.map(item => ({ id: item.id }));
 
-        const roles = await this.roleRepository.find({ where: queryList, relations: ['permission'] });
+        let roles = [];
+        if (queryList.length) {
+            // queryList 不能为空，否则会报错。
+            roles =  await this.roleRepository.find({ where: queryList, relations: ['permission'] });
+        }
 
         /** 菜单权限 代码code 的列表 */
         const menus = new Set<string>();
@@ -77,13 +81,16 @@ export class UserService {
             relations: ['role'],
         });
 
-        if (!user) {
+        if (!user || !user.role.length) {
             return new Set<string>();
         }
 
         const queryList = user.role.map(item => ({ id: item.id }));
-
-        const roles = await this.roleRepository.find({ where: queryList, relations: ['permission']  });
+        let roles = [];
+        if (queryList.length) {
+            // queryList 不能为空，否则会报错。
+            roles = await this.roleRepository.find({ where: queryList, relations: ['permission']  });
+        }
 
         const codeList = new Set<string>();
         for (const role of roles) {

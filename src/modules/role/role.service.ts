@@ -88,7 +88,11 @@ export class RolesService {
         const queryList = permissionIdList.map(item => {
             return { id: item };
         });
-        const permission = await this.permissionRepository.find({ where: queryList });
+        let permission = [];
+        if (queryList.length) {
+            // queryList 不能为空，否则会报错。
+            permission = await this.permissionRepository.find({ where: queryList });
+        }
         role.permission = permission;
 
         // 联合模型更新，需要使用save方法或者queryBuilder
