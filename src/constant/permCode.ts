@@ -96,4 +96,20 @@ export const permTree = {
         name: '客户管理',
         code: 'client-management',
     },
+    logManage: {
+        name: '日志管理',
+        code: 'log-management',
+        children: {
+            userLog: {
+                name: '用户日志',
+                code: 'user-log',
+                children: {
+                    deleteUserLog: {
+                        name: '删除用户日志',
+                        code: 'delete-user-log',
+                    },
+                },
+            },
+        },
+    },
 };

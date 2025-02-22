@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Between, Repository } from 'typeorm';
+import { Between, FindManyOptions, FindOneOptions, Repository } from 'typeorm';
 import { UserLog } from './user-log.entity';
 import { CreateUserLogDto } from './dto-req/post.dto';
 import { UserService } from '../user/user.service';
@@ -9,7 +9,7 @@ import * as requestIp from 'request-ip';
 import { objToJsonStr } from '@/utils';
 import { GetUserLogAllPagingDto } from './dto-req/get.dto';
 import { DeleteUserLogByTimeRangeDto } from './dto-req/delete.dto';
-
+import { noResBodyPath } from './constant';
 
 @Injectable()
 export class UserLogService {
@@ -58,7 +58,7 @@ export class UserLogService {
             ip: requestIp.getClientIp(request),
             path: request.url,
             methods: request.method,
-            resBody: data,
+            resBody: noResBodyPath.find((path) => request.url.includes(path)) ? '' : data,
             handeTime: Date.now() - startTime,
         }, ['time', 'handeTime']);
 
@@ -72,14 +72,50 @@ export class UserLogService {
 
     /** 查询用户日志-分页 */
     async findAllPaging (dto:GetUserLogAllPagingDto) {
-        const { size, page } = dto;
+        const { size, page, userId, startDateStr, endDateStr, sortBy, sortOrder } = dto;
         /** 步长 */
         const take = size || 2;
         /** 起始点 */
         const skip = ((page || 1) - 1) * take;
 
-        const userLogs = await this.userLogRepository.find({ take, skip });
-        const total = await this.userLogRepository.count();
+        /** 查询条件 */
+        const where: FindOneOptions<UserLog>['where'] = {};
+        if (userId) {
+            const user = await this.userService.findOne(userId);
+            if (user) {
+                where.user = user;
+            } else {
+                return { list: [], total: 0, page, size };
+            }
+        }
+        if (startDateStr) {
+            const startDate = new Date(startDateStr);
+            const endDate = new Date(endDateStr || new Date());
+            where.time = Between(startDate, endDate);
+        }
+
+        // 添加排序选项
+        const order: FindManyOptions<UserLog>['order'] = {};
+        if (sortBy) {
+            order[sortBy] = sortOrder?.toUpperCase() === 'DESC' ? 'DESC' : 'ASC';
+        } else {
+            // 默认按时间降序排序
+            order.time = 'DESC';
+        }
+
+        const userLogs = await this.userLogRepository.find({
+            take,
+            skip,
+            where,
+            relations: ['user'],
+            order, // 添加排序条件
+        });
+        // 隐藏用户密码
+        userLogs.forEach((userLog) => {
+            userLog.user.password = undefined;
+        });
+
+        const total = await this.userLogRepository.count({ where });
         return {
             list: userLogs,
             total,
@@ -98,6 +134,12 @@ export class UserLogService {
         }
         if (startDate > endDate) {
             return { message: '开始日期不能大于结束日期' };
+        }
+
+        // 先查询符合条件的记录数
+        const count = await this.userLogRepository.count({ where: { time: Between(startDate, endDate) } });
+        if (count === 0) {
+            return { message: '指定时间范围内没有日志记录' };
         }
 
         // Between 是 TypeORM 提供的一个操作符，用于在数据库查询中指定一个范围。
