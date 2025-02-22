@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { CreatePermissionDto } from './dto/create-permission.dto';
 import { Repository } from 'typeorm';
 import { Permission } from './permission.entity';
-import { GetPermissionListDto, GetPermissionListItem } from './dto-res/get.dto';
+import { GetPermissionListItem } from './dto-res/get.dto';
 
 @Injectable()
 export class PermissionService {

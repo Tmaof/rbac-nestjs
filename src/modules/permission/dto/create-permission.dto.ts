@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty, IsNumber } from 'class-validator';
+import { IsString, IsNotEmpty, IsNumber, IsOptional } from 'class-validator';
 import { PermissionTypeEnum } from '../enum';
 
 export class CreatePermissionDto {
@@ -11,8 +11,9 @@ export class CreatePermissionDto {
     @IsString()
         name: string;
     /** 该权限的父权限id，如若添加根权限，不需要传递pid。 */
+    @IsOptional()
     @IsNumber()
-        pid: number;
+        pid?: number;
     /**  权限类型，为1代表页面权限，为2代表按钮权限。 */
     @IsNotEmpty()
     @IsNumber()
