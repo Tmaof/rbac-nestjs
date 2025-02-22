@@ -4,6 +4,7 @@ import { CreatePermissionDto } from './dto/create-permission.dto';
 import { Repository } from 'typeorm';
 import { Permission } from './permission.entity';
 import { GetPermissionListItem } from './dto-res/get.dto';
+import { ResCodeEnum } from '@/enum';
 
 @Injectable()
 export class PermissionService {
@@ -88,14 +89,18 @@ export class PermissionService {
                 throw new Error('权限不存在');
             }
 
-            // 查找并删除所有子权限
-            const children = await this.permissionRepository.find({ where: { parentPermission: permission } });
-            for (const child of children) {
-                await this.permissionRepository.delete(child.id);
-            }
+            /** 递归删除子权限 */
+            const dfsDelete = async (permission:Permission) => {
+                // 查找并删除所有子权限
+                const children = await this.permissionRepository.find({ where: { parentPermission: permission } });
+                for (const child of children) {
+                    await dfsDelete(child);
+                }
 
-            // 删除权限
-            await this.permissionRepository.delete(permission.id);
+                // 删除权限
+                await this.permissionRepository.delete(permission.id);
+            };
+            await dfsDelete(permission);
 
             // 提交事务
             await queryRunner.commitTransaction();
@@ -106,7 +111,7 @@ export class PermissionService {
             await queryRunner.rollbackTransaction();
             // 返回删除失败的消息和错误信息
             console.error(error.message);
-            return { message: `删除失败:${error.message}` };
+            return { message: `删除失败:${error.message}`, success: false, code: ResCodeEnum.fail };
         } finally {
             // 释放QueryRunner实例
             await queryRunner.release();
