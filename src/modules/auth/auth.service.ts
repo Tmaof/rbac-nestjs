@@ -5,6 +5,9 @@ import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
+    // 用一个 Set 来存储已经退出登录的 token
+    private invalidatedTokens = new Set<string>();
+
     constructor (private userService: UserService, private jwt: JwtService) {}
 
     /** 登录 */
@@ -42,5 +45,20 @@ export class AuthService {
         });
 
         return res;
+    }
+
+    /** 退出登录 */
+    async logout ({ userId, token }: { userId: number, token: string }) {
+        if (!userId || !token) {
+            throw new ForbiddenException('用户未登录');
+        }
+        // 将用户 token 添加到已退出登录的集合中
+        this.invalidatedTokens.add(token);
+        return true;
+    }
+
+    /** 验证 token 是否有效 */
+    validateToken (token: string): boolean {
+        return !this.invalidatedTokens.has(token);
     }
 }

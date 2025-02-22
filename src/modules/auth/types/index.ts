@@ -8,6 +8,8 @@ export type JwtPayloadInfo = {
 
 /** jwt 负载 解析后，添加到 请求对象 req 中  */
 export type JwtPayloadParsed = {
+    token: string;
+
     /** jwt 负载 */
     username:string;
 

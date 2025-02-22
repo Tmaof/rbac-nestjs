@@ -4,10 +4,13 @@ import {
     Post,
     UseInterceptors,
     ClassSerializerInterceptor,
+    Req,
+    UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { SigninUserDto } from './dto/signin-user.dto';
 import { getCommonRes } from '@/utils';
+import { JwtGuard } from '@/guards/jwt.guard';
 
 
 @Controller('auth')
@@ -29,5 +32,15 @@ export class AuthController {
         const { username, password } = dto;
         const data = await this.authService.signup(username, password);
         return getCommonRes({ data });
+    }
+
+    /** 退出登录 */
+    @Post('/logout')
+    @UseGuards(JwtGuard)
+    async logout (@Req() req) {
+        const userId = req.user?.userId;
+        const token = req.user?.token;
+        await this.authService.logout({ userId, token });
+        return getCommonRes({ message: '退出登录成功' });
     }
 }
