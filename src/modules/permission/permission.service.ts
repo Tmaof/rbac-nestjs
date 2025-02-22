@@ -29,23 +29,40 @@ export class PermissionService {
 
     /** 获取 权限列表-权限树 */
     async getPermissionList () {
-        const permissionList = await this.permissionRepository.find({ relations: ['children', 'parentPermission'] });
-        // 过滤出根权限
-        const filterList = permissionList.filter(permission => !permission.parentPermission);
-        const resList:GetPermissionListDto = [];
+        const permissionList = await this.permissionRepository.find({ relations: ['parentPermission'] });
 
-        /** 为 每个子权限中 添加 pid属性 */
-        const addPid = (pid: number, permissionList: Permission[], resList: GetPermissionListDto) => {
-            for (const permission of permissionList) {
-                const dtoItem: GetPermissionListItem = { pid, name: permission.name, code: permission.code, type: permission.type, id: permission.id, children: [] };
-                if (permission.children && permission.children.length > 0) {
-                    addPid(permission.id, permission.children, dtoItem.children);
+        /** 获取 dtoItem */
+        const getDtoItem = (permission:Permission, parentId:number):GetPermissionListItem => {
+            return { pid: parentId, name: permission.name, code: permission.code, type: permission.type, id: permission.id, children: [] };
+        };
+
+        /** 父权限id 和子权限列表的映射 */
+        const map = new Map<number, GetPermissionListItem[]>();
+        for (const permission of permissionList) {
+            const parentId = permission.parentPermission?.id;
+            if (!parentId) continue;
+            const dtoItem = getDtoItem(permission, parentId);
+            if (map.has(parentId)) {
+                map.get(parentId).push(dtoItem);
+            } else {
+                map.set(parentId, [dtoItem]);
+            }
+        }
+
+        // 过滤出根权限
+        const rootList = permissionList.filter(permission => !permission.parentPermission).map(permission => getDtoItem(permission, -1));
+
+        /** 深度优先搜索 */
+        const dfs = (list: GetPermissionListItem[]) => {
+            for (const dtoItem of list) {
+                if (map.has(dtoItem.id)) {
+                    dtoItem.children = map.get(dtoItem.id) || [];
+                    dfs(dtoItem.children);
                 }
-                resList.push(dtoItem);
             }
         };
-        addPid(-1, filterList, resList);
-        return { data: resList };
+        dfs(rootList);
+        return { data: rootList };
     }
 
     /**
@@ -88,7 +105,7 @@ export class PermissionService {
             // 如果发生错误，回滚事务
             await queryRunner.rollbackTransaction();
             // 返回删除失败的消息和错误信息
-            console.log(error.message);
+            console.error(error.message);
             return { message: `删除失败:${error.message}` };
         } finally {
             // 释放QueryRunner实例
