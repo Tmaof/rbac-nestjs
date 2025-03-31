@@ -8,8 +8,11 @@ const commonEnvFilePath = path.resolve('config', 'env/.env.common');
 /** 环境变量文件路径 */
 export const envFilePath = path.resolve('config', `env/.env.${process.env.NODE_ENV || 'development'}`);
 
+/** 本地环境变量文件，不提交git，用于隐私配置，如支付配置 */
+export const envFileLocalPath = path.resolve('config', `env/.env.${process.env.NODE_ENV || 'development'}.local`);
+
 /** 环境变量文件路径: 通用 + 当前 */
-export const envFilePathAll = [commonEnvFilePath, envFilePath];
+export const envFilePathAll = [commonEnvFilePath, envFilePath, envFileLocalPath];
 
 /** 实体文件路径 */
 // 注意：path.resolve和path.join的区别；最终是运行打包的代码在dist目录中
@@ -25,10 +28,13 @@ function getServerConfig () {
         return {};
     }
 
-    const commonConfig = getEnv(commonEnvFilePath);
-    const envConfig = getEnv(envFilePath);
-
-    const config = { ...commonConfig, ...envConfig };
+    let config = {};
+    for (const path of envFilePathAll) {
+        config = {
+            ...config,
+            ...getEnv(path),
+        };
+    }
     return config;
 }
 
