@@ -2,6 +2,10 @@
 
 [在线项目文档](https://www.yuque.com/maofu-rzqcp/snisqw/ifkd4gk7g9pby97w)
 
+# 在线演示
+
+[http://vue3-admin.webproject.maofu123.top/](http://vue3-admin.webproject.maofu123.top/)
+
 # 项目启动
 
 开发
@@ -26,6 +30,7 @@ pnpm start:prod
 ```
 
 # 前端项目地址
+
 [gitee](https://gitee.com/tmaofu/back_office_management)
 
 [github](https://github.com/Tmaof/vue3-admin-template-combined-api)
