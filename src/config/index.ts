@@ -2,6 +2,8 @@ import * as fs from 'fs';
 import * as dotenv from 'dotenv';
 import path = require('path');
 
+const srcPath = path.join(__dirname, '../');
+
 /** 通用配置文件路径 */
 const commonEnvFilePath = path.join(__dirname, 'env/.env.common');
 
@@ -16,7 +18,7 @@ export const envFilePathAll = [commonEnvFilePath, envFilePath, envFileLocalPath]
 
 /** 实体文件路径 */
 // 注意：path.resolve和path.join的区别；最终是运行打包的代码在dist目录中
-export const entitiesPaths = [path.join(__dirname, '/modules', '/**/*.entity{.ts,.js}')];
+export const entitiesPaths = [path.join(srcPath, '/modules', '/**/*.entity{.ts,.js}')];
 
 /** 获取配置对象 */
 function getServerConfig () {

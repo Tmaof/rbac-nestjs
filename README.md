@@ -25,6 +25,10 @@ pnpm start:debug
 
 启动生产
 
+```
+pnpm build
+```
+
 ```bash
 pnpm start:prod
 ```
