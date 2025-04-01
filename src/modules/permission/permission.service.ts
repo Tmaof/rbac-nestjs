@@ -12,11 +12,14 @@ export class PermissionService {
 
     /** 创建 一个 权限 */
     async create (dto: CreatePermissionDto) {
+        const exist = await this.permissionRepository.findOne({ where: { code: dto.code } });
+        if (exist) throw new Error('权限代码已经存在，请更换');
+
         // 如果有父权限，则先找到父权限，然后再创建子权限
         if (dto.pid) {
             const parentPermission = await this.permissionRepository.findOne({ where: { id: dto.pid } });
             if (!parentPermission) {
-                return { message: '父权限不存在' };
+                throw new Error('父权限不存在');
             }
             const newPermission = { ...dto, parentPermission };
             const permission = this.permissionRepository.create(newPermission);

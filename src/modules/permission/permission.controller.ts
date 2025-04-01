@@ -24,8 +24,8 @@ export class PermissionController {
     /** 添加权限 */
     @Post('add')
     @setNeedPerm(permTree.permManage.children.menuList.children.addPerm)
-    addPermission (@Body() dto: CreatePermissionDto) {
-        this.permissionService.create(dto);
+    async addPermission (@Body() dto: CreatePermissionDto) {
+        await this.permissionService.create(dto);
         return getCommonRes();
     }
 
