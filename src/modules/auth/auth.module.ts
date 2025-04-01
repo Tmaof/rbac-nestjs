@@ -5,7 +5,7 @@ import { UserModule } from '@/modules/user/user.module';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './auth.strategy';
 import { ConfigService } from '@nestjs/config';
-import { ConfigEnum } from 'config/env/config.enum';
+import { ConfigEnum } from '@/config/env/config.enum';
 
 @Global()
 @Module({

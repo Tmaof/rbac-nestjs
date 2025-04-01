@@ -7,9 +7,9 @@ import { PermissionModule } from './modules/permission/permission.module';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { GlobalInterceptor } from './interceptors/global.interceptor';
 import { UserLogModule } from './modules/user-log/user-log.module';
-import { entitiesPaths, envFilePathAll } from 'config';
+import { entitiesPaths, envFilePathAll } from '@/config';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { ConfigEnum } from 'config/env/config.enum';
+import { ConfigEnum } from '@/config/env/config.enum';
 
 
 @Global()

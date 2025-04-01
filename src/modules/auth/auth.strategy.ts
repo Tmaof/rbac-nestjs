@@ -3,7 +3,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtPayloadInfo, JwtPayloadParsed } from './types';
 import { ConfigService } from '@nestjs/config';
-import { ConfigEnum } from 'config/env/config.enum';
+import { ConfigEnum } from '@/config/env/config.enum';
 import { AuthService } from './auth.service';
 
 
